@@ -22,43 +22,40 @@ services:
       - "9000:9000"
     restart: always
     networks:
-      - predictions-network
+      - rt-network
     volumes:
      - /var/run/docker.sock:/var/run/docker.sock
      - portainer:/data/portainer
 
-  predictions-dash:
+  web-app:
     build:
       context: ./
-      dockerfile: DockerfilePredictionsDash
+      dockerfile: DockerfileWebApp
     ports:
-      - "9001:9001"
+      - "4200:4200"
     restart: always
     networks:
       - rt-network
     volumes:
-      - predictions-dash:/data/predictions-dash
+      - web-app:/data/web-app
 
-  predictions-api:
+  api:
     build:
       context: ./
-      dockerfile: DockerfilePredictionsApi
+      dockerfile: DockerfileApi
     ports:
-      - "9002:9002"
+      - "3000:3000"
     restart: always
     networks:
       - rt-network
     volumes:
-      - predictions-api:/data/predictions-api
-    depends_on:
-      - postgres
+      - api:/data/api
 
 volumes:
     postgres:
-    pgadmin:
     portainer:
-    predictions-dash:
-    predictions-api:
+    web-app:
+    api:
 
 networks:
   rt-network:
