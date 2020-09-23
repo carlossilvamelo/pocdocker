@@ -1,0 +1,72 @@
+version: '3.5'
+
+services:
+  postgres:
+    container_name: postgres_container
+    image: postgres
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "postgres"
+      PGDATA: /data/postgres
+    volumes:
+       - postgres:/data/postgres
+    ports:
+      - "5432:5432"
+    restart: always
+    networks:
+      - rt-network
+
+  portainer:
+    image: portainer/portainer
+    ports:
+      - "9000:9000"
+    restart: always
+    networks:
+      - predictions-network
+    volumes:
+     - /var/run/docker.sock:/var/run/docker.sock
+     - portainer:/data/portainer
+
+  predictions-dash:
+    build:
+      context: ./
+      dockerfile: DockerfilePredictionsDash
+    ports:
+      - "9001:9001"
+    restart: always
+    networks:
+      - rt-network
+    volumes:
+      - predictions-dash:/data/predictions-dash
+
+  predictions-api:
+    build:
+      context: ./
+      dockerfile: DockerfilePredictionsApi
+    ports:
+      - "9002:9002"
+    restart: always
+    networks:
+      - rt-network
+    volumes:
+      - predictions-api:/data/predictions-api
+    depends_on:
+      - postgres
+
+volumes:
+    postgres:
+    pgadmin:
+    portainer:
+    predictions-dash:
+    predictions-api:
+
+networks:
+  rt-network:
+    driver: bridge          
+
+
+
+
+
+
+
